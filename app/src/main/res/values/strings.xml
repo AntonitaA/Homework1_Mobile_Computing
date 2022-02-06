@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Homework1_Mobile_Computing</string>
+    <string name="search">Search</string>
+    <string name="account">Account</string>
+    <string name="exit">exit</string>
+    <string name="showPassword">showPassword</string>
+    <string name="back">back</string>
+</resources>
