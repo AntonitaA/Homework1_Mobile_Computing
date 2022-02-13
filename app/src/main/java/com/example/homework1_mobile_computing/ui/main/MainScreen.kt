@@ -21,7 +21,6 @@ import com.google.accompanist.insets.systemBarsPadding
 
 @Composable
 fun MainScreen(
-    //viewModel: MainViewModel = viewModel(),
     mainNavigationController: NavController,
     username:String
 ){
@@ -34,7 +33,6 @@ fun MainScreen(
         )
 
     }
-    println(username)
 }
 
 @Composable
@@ -73,8 +71,7 @@ fun MainContent(
 
             ReminderEntries(
                 modifier = Modifier.fillMaxSize(),
-                //horizontalAlignment = Alignment.CenterHorizontally,
-                //verticalArrangement = Arrangement.Center
+                contentNavigationController
             )
 
         }
@@ -103,7 +100,7 @@ private fun MainScreenBar(
             IconButton(onClick = { mainNavController.navigate("LoginScreen") }) {
                 Icon(imageVector = Icons.Filled.ExitToApp, contentDescription = stringResource(R.string.exit))
             }
-            IconButton(onClick = { mainNavController.navigate("ProfileScreen/${username}") }) {
+            IconButton(onClick = { mainNavController.navigate("ProfileScreen/${username}") /**/ }) {
                 Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = stringResource(R.string.account))
             }
         }

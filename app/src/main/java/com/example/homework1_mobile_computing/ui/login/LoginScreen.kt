@@ -1,50 +1,57 @@
 package com.example.homework1_mobile_computing.ui.login
 
+import android.R
+import android.app.Activity
+import android.app.Instrumentation
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Resources
-import android.provider.ContactsContract.CommonDataKinds.Email
-import android.provider.Settings.Global.getString
-import android.provider.Settings.Secure.getString
-import android.provider.Settings.System.getString
+import android.os.Bundle
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.res.TypedArrayUtils.getString
+import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.navigation.NavController
-import com.example.homework1_mobile_computing.R
+import com.example.homework1_mobile_computing.ui.MainActivity
 import com.example.homework1_mobile_computing.ui.theme.Purple200
 import com.example.homework1_mobile_computing.ui.theme.Purple700
 import com.google.accompanist.insets.systemBarsPadding
+import java.util.*
 
 
 @Composable
 fun LoginScreen(
     loginNavController: NavController,
     sharedPreferences: SharedPreferences,
-){
-
-
+) {
     //allows us to have access to the interface
-    Surface(modifier = Modifier.fillMaxSize(),
-            color = Purple200) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Purple200
+    ) {
         val username = rememberSaveable { mutableStateOf("") }
         val password = rememberSaveable { mutableStateOf("") }
 
@@ -71,38 +78,48 @@ fun LoginScreen(
             OutlinedTextField(
                 value = username.value,
 
-                onValueChange = {
-                        data -> username.value = data
+                onValueChange = { data ->
+                    username.value = data
                 },
                 label = { Text("Username") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text
                 ),
-                isError = username.value!="" && !sharedPreferencesData(sharedPreferences, username, password),
+                isError = username.value != "" && !sharedPreferencesData(
+                    sharedPreferences,
+                    username,
+                    password
+                ),
                 shape = MaterialTheme.shapes.medium,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Purple700,
-                    unfocusedBorderColor = Color.White)
+                    unfocusedBorderColor = Color.White
+                )
             )
             Spacer(modifier = Modifier.height(10.dp))
 
             // TextBox for the password
             OutlinedTextField(
                 value = password.value,
-                onValueChange = {
-                        data -> password.value = data
-                              },
+                onValueChange = { data ->
+                    password.value = data
+                },
                 label = { Text("Password") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password
                 ),
-                isError = username.value!="" && !sharedPreferencesData(sharedPreferences, username, password),
+                isError = username.value != "" && !sharedPreferencesData(
+                    sharedPreferences,
+                    username,
+                    password
+                ),
                 shape = MaterialTheme.shapes.medium,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Purple700,
-                    unfocusedBorderColor = Color.White),
+                    unfocusedBorderColor = Color.White
+                ),
                 visualTransformation = PasswordVisualTransformation()
             )
 
@@ -111,8 +128,8 @@ fun LoginScreen(
             Button(
                 onClick = {
                     if (sharedPreferencesData(sharedPreferences, username, password))
-                        loginNavController.navigate("MainScreen/${username.value}")
-                          },
+                        loginNavController.navigate("MainScreen/${username.value}")  /**/
+                },
                 enabled = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.large,
@@ -140,9 +157,44 @@ fun LoginScreen(
                     color = Color.White
                 )
             }
+
+
         }
+
+
+// Speech to Text
+/*
+        Text(
+            text = "df"*//*MainActivity().talk*//*,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        val context = LocalContext.current
+        Button(
+            onClick = {
+                //MainActivity().askSpeechInput()
+            },
+            modifier = Modifier.clip(RoundedCornerShape(10.dp))
+        ) {
+            Text(
+                text = "Talk",
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+            )
+        }*/
+
+
     }
 }
+
+
 
 
 fun sharedPreferencesData(
@@ -153,22 +205,18 @@ fun sharedPreferencesData(
 
     val givenUsername: String = username.value
     val givenPassword: String = password.value
-    //val storedUsername: String? = sharedPreferences.getString(usernameKey, passwordKey)
     val storedPassword: String?
-/*
-    println("given username: " + givenUsername)
-    println("given password: " + givenPassword)
-    //println("stored username: " + storedUsername)
-    //println("stored username: " + storedPassword)*/
 
     return if (sharedPreferences.contains(givenUsername)) {
         storedPassword = sharedPreferences.getString(givenUsername, "")
-        /*println("stored username: " + givenUsername)
-        println("stored password: " + storedPassword)*/
         storedPassword == givenPassword
     }
     else {
-        //println("failure")
         false
     }
 }
+
+
+
+
+

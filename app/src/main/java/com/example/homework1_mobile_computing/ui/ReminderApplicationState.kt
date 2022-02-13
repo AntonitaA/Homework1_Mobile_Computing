@@ -1,4 +1,4 @@
-package com.example.homework1_mobile_computing
+package com.example.homework1_mobile_computing.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

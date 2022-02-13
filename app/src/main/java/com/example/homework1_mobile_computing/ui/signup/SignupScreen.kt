@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.homework1_mobile_computing.R
-import com.example.homework1_mobile_computing.ui.login.sharedPreferencesData
+//import com.example.homework1_mobile_computing.ui.login.sharedPreferencesData
 import com.example.homework1_mobile_computing.ui.theme.Purple200
 import com.example.homework1_mobile_computing.ui.theme.Purple500
 import com.example.homework1_mobile_computing.ui.theme.Purple700
@@ -33,7 +33,7 @@ fun SignupScreen(
     signNavController: NavController,
     sharedPreferences: SharedPreferences,
     onBackPress: () -> Unit
-    ) {
+) {
     //allows us to have access to the interface
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -133,7 +133,7 @@ fun SignupContent(
             OutlinedTextField(
                 value = usernameInput.value,
                 onValueChange = { input -> usernameInput.value = input },
-                isError = usernameInput.value!="" && sharedPreferences.contains(usernameInput.value),
+                isError = usernameInput.value!="" /*&& sharedPreferences.contains(usernameInput.value)*/,
                 label = { Text("Username") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
@@ -205,7 +205,7 @@ private fun SignupScreenBar(
     signNavController: NavController,
     onBackPress: () -> Unit,
     barBackgroundColor : Color
-    ){
+){
     TopAppBar(
         title = {
             Text(

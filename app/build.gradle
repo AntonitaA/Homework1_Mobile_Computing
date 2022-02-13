@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+
 }
 
 android {
@@ -66,10 +68,10 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:2.4.0-rc01"
 
     // ViewModel
-    //implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0"
 
     // Coroutines
-    //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
 
     // ConstraintLayout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02"
@@ -79,6 +81,10 @@ dependencies {
 
     // Visible Password Icon
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
+    // Room (using RoomDatabase)
+    implementation "androidx.room:room-ktx:2.4.1"
+    kapt "androidx.room:room-compiler:2.4.1"
 
 
 

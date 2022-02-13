@@ -1,22 +1,19 @@
 package com.example.homework1_mobile_computing.ui.reminder
 
-import android.content.SharedPreferences
+import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -24,13 +21,22 @@ import com.example.homework1_mobile_computing.R
 import com.example.homework1_mobile_computing.ui.theme.Purple200
 import com.example.homework1_mobile_computing.ui.theme.Purple700
 import com.google.accompanist.insets.systemBarsPadding
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.homework1_mobile_computing.data.entity.Reminder
+
+import kotlinx.coroutines.launch
+import java.lang.NumberFormatException
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @Composable
 fun NewReminderScreen(
     reminderNavController: NavController,
     onBackPress: () -> Unit,
-    username: String
+    username: String,
+    viewModel: ReminderViewModel = viewModel()
 ) {
     //allows us to have access to the interface
     Surface(
@@ -39,7 +45,8 @@ fun NewReminderScreen(
         NewReminderContent(
             contentNavigationController = reminderNavController,
             onBackPress = onBackPress,
-            username
+            username,
+            viewModel
         )
     }
 }
@@ -49,15 +56,21 @@ fun NewReminderScreen(
 fun NewReminderContent(
     contentNavigationController: NavController,
     onBackPress: () -> Unit,
-    username: String
+    username: String,
+    viewModel: ReminderViewModel = viewModel()
 ) {
+    val viewState by viewModel.state.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val title = rememberSaveable { mutableStateOf("") }
+
+    val date = rememberSaveable { mutableStateOf( "" )}
+    //val time = rememberSaveable { mutableStateOf("") }
     //allows us to have access to the interface
     Surface(
         modifier = Modifier.padding(bottom = 24.dp)
+
     ) {
-        val title = rememberSaveable { mutableStateOf("") }
-        val date = rememberSaveable { mutableStateOf("") }
-        val time = rememberSaveable { mutableStateOf("") }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -70,7 +83,6 @@ fun NewReminderContent(
                 onBackPress = onBackPress,
                 barBackgroundColor = appBarColor
             )
-
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -90,11 +102,11 @@ fun NewReminderContent(
                     focusedBorderColor = Purple700,
                     unfocusedBorderColor = Purple200
                 )
-                )
+            )
             Spacer(modifier = Modifier.height(10.dp))
 
             // Reminder Time
-            OutlinedTextField(
+            /*OutlinedTextField(
                 value = time.value,
                 onValueChange = {
                         data -> time.value = data
@@ -102,7 +114,7 @@ fun NewReminderContent(
                 label = { Text("Time") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text
+                    keyboardType = KeyboardType.Number
                 ),
                 shape = MaterialTheme.shapes.medium,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -110,18 +122,19 @@ fun NewReminderContent(
                     unfocusedBorderColor = Purple200
                 )
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(10.dp))*/
 
             // Reminder Date
             OutlinedTextField(
+
                 value = date.value,
                 onValueChange = {
-                        data -> date.value = data
+                        data:String -> date.value = data
                 },
                 label = { Text("Date") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text
+                    keyboardType = KeyboardType.Number
                 ),
                 shape = MaterialTheme.shapes.medium,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -136,7 +149,37 @@ fun NewReminderContent(
                 contentAlignment = Alignment.TopCenter
             ) {
                 Button(
-                    onClick = { contentNavigationController.navigate("MainScreen/${username}") },
+                    onClick = {
+                        if (checkDate(givenDate = date.value) != null &&
+                            title.value != "" &&
+                            date.value != ""
+                        ) {
+                            coroutineScope.launch {
+                                viewModel.saveReminder(
+                                    Reminder(
+                                        title = title.value,
+                                        cordX = "coordinate X",
+                                        cordY = "coordinate Y",
+                                        time = Date().time, /*TODO*/
+                                        date = /*(*/date.value/*).toLong()*/,
+                                        seen = false,
+                                        creationTime = SimpleDateFormat(
+                                            "h:mm a",
+                                            Locale.getDefault()
+                                        ).format(Date().time),
+                                        creationDate = SimpleDateFormat(
+                                            "MMMM dd, yyy",
+                                            Locale.getDefault()
+                                        ).format(Date().time),
+                                        creatorId = "creator id",
+                                    )
+                                )
+                            }
+                            contentNavigationController.navigate("MainScreen/${username}")
+                        }
+                        println(SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date().time))
+                        println(SimpleDateFormat("MMMM dd, yyy", Locale.getDefault()).format(Date().time))
+                    },
                     enabled = true,
                     modifier = Modifier
                         .width(300.dp)
@@ -150,11 +193,10 @@ fun NewReminderContent(
                     )
                 }
             }
-            }
-
         }
-    }
 
+    }
+}
 
 
 
@@ -163,7 +205,7 @@ private fun NewReminderScreenBar(
     reminderNavController: NavController,
     onBackPress: () -> Unit,
     barBackgroundColor : Color
-    ){
+){
     TopAppBar(
         title = {
             Text(
@@ -178,14 +220,57 @@ private fun NewReminderScreenBar(
         backgroundColor = barBackgroundColor,
         navigationIcon = {
             IconButton( onClick = { onBackPress() }
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = stringResource(R.string.back)
-            )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.back)
+                )
             }
         }
 
     )
 }
+
+private fun checkDate(givenDate: String?) : String? {
+    val date: String?
+    try {
+        val givenFormatDate =
+            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(givenDate.toString())
+
+        val day: Long? = givenDate?.substring(0, 2)?.toLong()
+        val month: Long? = givenDate?.substring(3, 5)?.toLong()
+        val year: Long? = givenDate?.substring(6, givenDate.length)?.toLong()
+        if (day != null && month != null && year != null) {
+            if (day in 0..31 &&
+                month in 0..12 &&
+                year in 1900..2100
+            ) {
+                if (givenFormatDate?.compareTo(Date())!! > 0) {
+                    return givenDate
+                } else {
+                    return null
+                }
+            } else {
+                return null
+            }
+
+        } else {
+            return null
+        }
+
+    } catch (e1: ParseException) {
+        //println("failure parse")
+        date = null
+        return date
+    } catch (e2: NumberFormatException) {
+        //println("failure format")
+        date = null
+        return date
+    } catch (e3: StringIndexOutOfBoundsException) {
+        //println("failure out")
+        date = null
+        return date
+    }
+}
+
 
