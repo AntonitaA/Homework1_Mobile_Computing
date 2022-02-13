@@ -80,17 +80,10 @@ class MainActivity : ComponentActivity() {
             print("no")
             Toast.makeText(context, "Speech not Available", Toast.LENGTH_SHORT).show()
         } else {
-            print("mpike")
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-            print("1")
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH)
-            print("2")
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-            print("3")
             intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Talk Something")
-            print("4")
-
-                //println(intent==null)
 
             startActivityForResult(intent, 102)
 
@@ -99,11 +92,4 @@ class MainActivity : ComponentActivity() {
 }
 
 */
-/*
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    Homework1_Mobile_ComputingTheme {
-        Greeting("Android")
-    }
-}*/
+

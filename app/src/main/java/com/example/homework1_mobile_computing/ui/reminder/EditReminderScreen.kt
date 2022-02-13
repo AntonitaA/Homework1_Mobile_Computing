@@ -238,17 +238,12 @@ private fun checkDate(givenDate: String?) : String? {
         val day: Long? = givenDate?.substring(0, 2)?.toLong()
         val month: Long? = givenDate?.substring(3, 5)?.toLong()
         val year: Long? = givenDate?.substring(6, givenDate.length)?.toLong()
-        println("day: " + day)
-        println("month: " + month)
-        println("year: " + year)
         if (day != null && month != null && year != null) {
             if (day in 0..31 &&
                 month in 0..12 &&
                 year in 1900..2100
             ) {
                 if (givenFormatDate?.compareTo(Date())!! > 0) {
-                    print("current: " + Date().toString())
-                    println("givenDate: " + givenDate)
                     return givenDate
                 } else {
                     return null
@@ -262,15 +257,15 @@ private fun checkDate(givenDate: String?) : String? {
         }
 
     } catch (e1: ParseException) {
-        println("failure parse")
+        //println("failure parse")
         date = null
         return date
     } catch (e2: NumberFormatException) {
-        println("failure format")
+        //println("failure format")
         date = null
         return date
     } catch (e3: StringIndexOutOfBoundsException) {
-        println("failure out")
+        //println("failure out")
         date = null
         return date
     }

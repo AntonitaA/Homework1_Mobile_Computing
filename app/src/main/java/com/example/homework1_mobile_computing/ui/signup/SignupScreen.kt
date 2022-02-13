@@ -133,7 +133,7 @@ fun SignupContent(
             OutlinedTextField(
                 value = usernameInput.value,
                 onValueChange = { input -> usernameInput.value = input },
-                isError = usernameInput.value!="" /*&& sharedPreferences.contains(usernameInput.value)*/,
+                isError = usernameInput.value!="" && sharedPreferences.contains(usernameInput.value),
                 label = { Text("Username") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(

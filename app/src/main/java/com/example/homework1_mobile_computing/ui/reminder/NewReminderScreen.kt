@@ -177,8 +177,6 @@ fun NewReminderContent(
                             }
                             contentNavigationController.navigate("MainScreen/${username}")
                         }
-                        println(SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date().time))
-                        println(SimpleDateFormat("MMMM dd, yyy", Locale.getDefault()).format(Date().time))
                     },
                     enabled = true,
                     modifier = Modifier
