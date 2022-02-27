@@ -1,16 +1,18 @@
+
+
+
+
 package com.example.homework1_mobile_computing.ui.main.reminderEntries
 
-import android.app.AlertDialog
-import android.content.DialogInterface
-import android.text.InputType
-import android.widget.EditText
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ViewHeadline
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -32,7 +34,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun ReminderEntries (
+fun AllReminders (
     modifier: Modifier = Modifier,
     reminderNavController: NavController
 ){
@@ -50,38 +52,14 @@ fun ReminderEntries (
             }
         }
 
+        for (reminder in newList){
+            println(reminder.title)
+        }
 
-        ReminderList(
-            //list = viewState.reminders,
-            list = newList,
+        AllRemindersList(
+            list = viewState.reminders,
             reminderNavController
         )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box(
-            Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            Button(
-                onClick = {
-                    reminderNavController.navigate("AllRemindersScreen")
-
-                },
-
-                enabled = true,
-                modifier = Modifier
-                    .width(300.dp)
-                    .size(50.dp),
-                shape = MaterialTheme.shapes.large,
-                colors = ButtonDefaults.buttonColors(backgroundColor = Purple700)
-            ) {
-                Text(
-                    text = "Show all reminders",
-                    color = Color.White
-                )
-            }
-        }
 
 
 
@@ -89,7 +67,7 @@ fun ReminderEntries (
 }
 
 @Composable
-private fun ReminderList(
+private fun AllRemindersList(
     list: List<Reminder>,
     reminderNavController: NavController
 ){
@@ -98,7 +76,7 @@ private fun ReminderList(
         verticalArrangement = Arrangement.Center
     ){
         items(list){ item ->
-            ReminderLisItem(
+            AllRemindersListItem(
                 reminder = item,
                 onClick = {},
                 modifier = Modifier.fillParentMaxWidth(),
@@ -109,7 +87,7 @@ private fun ReminderList(
 }
 
 @Composable
-fun ReminderLisItem(
+fun AllRemindersListItem(
     reminder: Reminder,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -274,15 +252,3 @@ fun ReminderLisItem(
 }
 
 
-fun Long.toTimeString(): String{
-    return SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date(this))
-}
-
-fun Long.toDateString(): String {
-    return SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault()).format(Date(this))
-}
-
-
-private fun String.toDateString(): String{
-    return SimpleDateFormat("dd, MMM yyyy", Locale.getDefault()).format((this))
-}

@@ -1,12 +1,7 @@
 package com.example.homework1_mobile_computing.ui.reminder
 
 
-import android.app.DatePickerDialog
-import android.widget.DatePicker
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,16 +15,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.homework1_mobile_computing.R
+import com.example.homework1_mobile_computing.data.entity.Reminder
+import com.example.homework1_mobile_computing.ui.main.reminderEntries.toDateString
 import com.example.homework1_mobile_computing.ui.theme.Purple200
 import com.example.homework1_mobile_computing.ui.theme.Purple700
 import com.google.accompanist.insets.systemBarsPadding
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.homework1_mobile_computing.data.entity.Reminder
-
 import kotlinx.coroutines.launch
-import java.lang.NumberFormatException
+import java.text.DateFormatSymbols
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -92,7 +87,7 @@ fun EditReminderContent(
             onValueChange = {
                     data -> newTitle.value = data
             },
-            label = { Text("Reminder Title") },
+            label = { Text("New Reminder Title") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text
@@ -105,13 +100,13 @@ fun EditReminderContent(
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        /*// Reminder Time
+        // Reminder Time
         OutlinedTextField(
             value = newTime.value,
             onValueChange = {
                     data -> newTime.value = data
             },
-            label = { Text("Time") },
+            label = { Text("New Time") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number
@@ -122,7 +117,7 @@ fun EditReminderContent(
                 unfocusedBorderColor = Purple200
             )
         )
-        Spacer(modifier = Modifier.height(10.dp))*/
+        Spacer(modifier = Modifier.height(10.dp))
 
         // Reminder Date
         OutlinedTextField(
@@ -131,7 +126,7 @@ fun EditReminderContent(
             onValueChange = {
                     data:String -> newDate.value = data
             },
-            label = { Text("Date") },
+            label = { Text("New Date") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number
@@ -154,9 +149,11 @@ fun EditReminderContent(
                         newTitle.value != "" &&
                         newDate.value != ""
                     ) {
+                        val newDateAndTime : String = newDate.value + " " + newTime.value
+                        val newDateAndTimeDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).parse(newDateAndTime)
+
                         coroutineScope.launch {
-                            val selectedReminder: Reminder =
-                                viewModel.getReminder(selectedReminderId.toLong())
+                            val selectedReminder: Reminder = viewModel.getReminder(selectedReminderId.toLong())
 
                             viewModel.updateReminderElements(
                                 Reminder(
@@ -164,14 +161,14 @@ fun EditReminderContent(
                                     title = newTitle.value,
                                     cordX = selectedReminder.cordX,
                                     cordY = selectedReminder.cordY,
-                                    time = Date().time, /*TODO*/
-                                    date = newDate.value,
+                                    dateAndTime = newDateAndTimeDateFormat.time,
                                     seen = selectedReminder.seen,
-                                    creationTime = selectedReminder.creationTime,
-                                    creationDate = selectedReminder.creationDate,
+                                    creationTime = selectedReminder.creationTime,   /*TODO*/
+                                    creationDate = selectedReminder.creationDate, /*TODO*/
                                     creatorId = selectedReminder.creatorId
 
                                 )
+
                             )
                         }
                     }
@@ -229,12 +226,18 @@ private fun EditReminderScreenBar(
     )
 }
 
-private fun checkDate(givenDate: String?) : String? {
+private fun checkDate(givenDate: String?) : Long? {
     val date: String?
     try {
-        val givenFormatDate =
-            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(givenDate.toString())
+        val givenFormatDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(givenDate.toString()) // type Date
 
+
+        //val v = Date().year
+        /*TODO*/
+        /*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+Date date = format.parse(datetime);
+SimpleDateFormat df = new SimpleDateFormat("yyyy");
+year = df.format(date);*/
         val day: Long? = givenDate?.substring(0, 2)?.toLong()
         val month: Long? = givenDate?.substring(3, 5)?.toLong()
         val year: Long? = givenDate?.substring(6, givenDate.length)?.toLong()
@@ -243,11 +246,13 @@ private fun checkDate(givenDate: String?) : String? {
                 month in 0..12 &&
                 year in 1900..2100
             ) {
-                if (givenFormatDate?.compareTo(Date())!! > 0) {
-                    return givenDate
-                } else {
-                    return null
-                }
+                //if (givenFormatDate?.compareTo(Date())!! >= 0) {
+                    val finalDate : Long? = givenFormatDate.time  // type Long
+                    return finalDate
+
+                //} else {
+                //    return null
+                //}
             } else {
                 return null
             }

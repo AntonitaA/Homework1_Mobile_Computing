@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.homework1_mobile_computing.ui.ReminderApplicationState
 import com.example.homework1_mobile_computing.ui.rememberState
 import com.example.homework1_mobile_computing.ui.login.LoginScreen
+import com.example.homework1_mobile_computing.ui.main.AllRemindersScreen
 import com.example.homework1_mobile_computing.ui.main.MainScreen
 import com.example.homework1_mobile_computing.ui.profile.ProfileScreen
 import com.example.homework1_mobile_computing.ui.reminder.EditReminderScreen
@@ -60,6 +61,12 @@ fun ReminderApplication(
             onBackPress = { state.navigateBack() },
             entry.arguments?.getString("selectedReminderId")?:""
         )
+        }
+
+        composable(route = "AllRemindersScreen"){
+            AllRemindersScreen(
+                allNavigationController = state.navigationController
+            )
         }
     }
 }

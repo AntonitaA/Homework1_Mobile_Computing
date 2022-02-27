@@ -5,4 +5,5 @@
     <string name="exit">exit</string>
     <string name="showPassword">showPassword</string>
     <string name="back">back</string>
+    <string name="refresh">refresh</string>
 </resources>

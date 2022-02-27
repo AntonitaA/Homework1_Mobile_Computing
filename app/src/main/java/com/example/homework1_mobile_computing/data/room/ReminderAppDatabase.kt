@@ -6,7 +6,7 @@ import com.example.homework1_mobile_computing.data.entity.Reminder
 
 @Database(
     entities = [Reminder::class],
-    version = 1,
+    version = 4,
     exportSchema = false
 )
 abstract class ReminderAppDatabase : RoomDatabase(){

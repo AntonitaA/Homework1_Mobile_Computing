@@ -63,9 +63,9 @@ fun NewReminderContent(
     val coroutineScope = rememberCoroutineScope()
 
     val title = rememberSaveable { mutableStateOf("") }
-
     val date = rememberSaveable { mutableStateOf( "" )}
-    //val time = rememberSaveable { mutableStateOf("") }
+    val time = rememberSaveable { mutableStateOf("") }
+
     //allows us to have access to the interface
     Surface(
         modifier = Modifier.padding(bottom = 24.dp)
@@ -106,7 +106,7 @@ fun NewReminderContent(
             Spacer(modifier = Modifier.height(10.dp))
 
             // Reminder Time
-            /*OutlinedTextField(
+            OutlinedTextField(
                 value = time.value,
                 onValueChange = {
                         data -> time.value = data
@@ -122,7 +122,7 @@ fun NewReminderContent(
                     unfocusedBorderColor = Purple200
                 )
             )
-            Spacer(modifier = Modifier.height(10.dp))*/
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Reminder Date
             OutlinedTextField(
@@ -154,24 +154,26 @@ fun NewReminderContent(
                             title.value != "" &&
                             date.value != ""
                         ) {
+                            val newDateAndTime : String = date.value + " " + time.value
+                            val newDateAndTimeDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).parse(newDateAndTime)
+
                             coroutineScope.launch {
                                 viewModel.saveReminder(
                                     Reminder(
                                         title = title.value,
                                         cordX = "coordinate X",
                                         cordY = "coordinate Y",
-                                        time = Date().time, /*TODO*/
-                                        date = /*(*/date.value/*).toLong()*/,
+                                        dateAndTime = newDateAndTimeDateFormat.time,
                                         seen = false,
                                         creationTime = SimpleDateFormat(
                                             "h:mm a",
                                             Locale.getDefault()
-                                        ).format(Date().time),
+                                        ).format(Date().time),   /*TODO*/
                                         creationDate = SimpleDateFormat(
                                             "MMMM dd, yyy",
                                             Locale.getDefault()
-                                        ).format(Date().time),
-                                        creatorId = "creator id",
+                                        ).format(Date().time),  /*TODO*/
+                                        creatorId = "creator id"
                                     )
                                 )
                             }
@@ -243,11 +245,11 @@ private fun checkDate(givenDate: String?) : String? {
                 month in 0..12 &&
                 year in 1900..2100
             ) {
-                if (givenFormatDate?.compareTo(Date())!! > 0) {
+                //if (givenFormatDate?.compareTo(Date())!! >= 0) {
                     return givenDate
-                } else {
-                    return null
-                }
+                //} else {
+                //    return null
+                //}
             } else {
                 return null
             }
