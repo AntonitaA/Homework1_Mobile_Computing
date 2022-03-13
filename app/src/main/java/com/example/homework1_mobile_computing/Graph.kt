@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.homework1_mobile_computing.data.repository.ReminderRepository
 import com.example.homework1_mobile_computing.data.room.ReminderAppDatabase
+import com.example.homework1_mobile_computing.ui.MainActivity
 
 object Graph {
 
@@ -11,6 +12,9 @@ object Graph {
 
 // this context is available everywhere on the app
     lateinit var appContext: Context
+    //
+    lateinit var activity: MainActivity
+    //
 
     val reminderRepository by lazy {
         ReminderRepository(
@@ -23,5 +27,8 @@ object Graph {
         database = Room.databaseBuilder(context, ReminderAppDatabase::class.java, "reminderData.db")
             .fallbackToDestructiveMigration()
             .build()
+        //
+        activity = MainActivity()
+        //
     }
 }

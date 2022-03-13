@@ -50,6 +50,8 @@ android {
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.material:material:1.4.0'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
@@ -71,13 +73,13 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0"
 
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
 
     // ConstraintLayout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02"
 
     // Foundation
-    //implementation "androidx.compose.foundation:foundation:1.1.0-rc01"
+    implementation "androidx.compose.foundation:foundation:1.1.0-rc01"
 
     // Visible Password Icon
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
@@ -88,5 +90,16 @@ dependencies {
 
     // Work Manager
     implementation "androidx.work:work-runtime-ktx:2.7.1"
+
+    // Maps dependencies
+    implementation 'com.google.maps.android:maps-ktx:3.3.0'
+    implementation 'com.google.maps.android:maps-utils-ktx:3.3.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation 'com.google.maps.android:android-maps-utils:2.2.3'
+    // self added
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
+
+
+
 
 }

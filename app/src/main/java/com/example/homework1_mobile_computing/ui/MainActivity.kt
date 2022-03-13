@@ -31,13 +31,26 @@ import java.util.*
 
 class MainActivity : ComponentActivity() {
     lateinit var sharedPreferences: SharedPreferences
-    var talk: String = "Speech text should come here"
+    //var talk: String = "Speech text should come here"
 
     //private var talk by mutableStateOf("Speech text should come here")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        /*val alertDialog = android.app.AlertDialog.Builder(this).create()
+        alertDialog.setTitle("Title")
+        alertDialog.setMessage("This is VERY important. Do you agree?")
+        alertDialog.setButton(android.app.AlertDialog.BUTTON_POSITIVE, "Yes!") { dialog, which ->
+            Toast.makeText(applicationContext, "You said yes!", Toast.LENGTH_SHORT).show()
+        }
+        alertDialog.setButton(android.app.AlertDialog.BUTTON_NEGATIVE,"No") { _, _ ->
+            Toast.makeText(applicationContext, "Nooooo", Toast.LENGTH_SHORT).show()
+        }
+        alertDialog.show()*/
+
 
 
         setContent {

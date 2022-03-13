@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.lang.StringBuilder
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -188,7 +189,7 @@ private fun createMultipleNotifications(reminder: Reminder, differenceTime: Long
 
 
 private fun newReminderCreatedNotification(reminder: Reminder) {
-    val notificationId = 1
+    val notificationId = 3
     val builder = NotificationCompat.Builder(Graph.appContext, "CHANNEL_ID")
         .setSmallIcon(R.drawable.ic_launcher_background)
         .setContentTitle("You created a new reminder")
@@ -199,8 +200,60 @@ private fun newReminderCreatedNotification(reminder: Reminder) {
     }
 }
 
+fun locationNotification(reminders: List<Reminder>){
 
-private fun createNotificationChannel(context: Context){
+    var title: String = "title"
+    var content: String = "content"
+    var bigContent: String = "bigContent"
+    var stringBuilder : StringBuilder = StringBuilder("")
+    for (reminder in reminders){
+        stringBuilder.append(reminder.title + ", ")
+    }
+
+    val workManager = WorkManager.getInstance(Graph.appContext)
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
+
+    val notificationWorker = OneTimeWorkRequestBuilder<NotificationWorker>()
+        .setConstraints(constraints)
+        .build()
+    workManager.enqueue(notificationWorker)
+
+    if (reminders.count()==1){
+        title = "Notification for: " + reminders[0].title
+        content = "A reminder is near you current location! Expand for more"
+        bigContent = "The location of the reminder " + reminders[0].title + " is near your current location!" +
+                "\n" +
+                "Go back to see more details about the reminder"
+    } else{
+        title = "Notification for: " + stringBuilder
+        content = "You have many reminders near you current location! Expand for more"
+        bigContent = "The locations of the reminders " +  stringBuilder + " are near your current location!" +
+                "\n" +
+                "Go back to see more details about the reminders"
+    }
+
+    workManager.getWorkInfoByIdLiveData(notificationWorker.id)
+        .observeForever{ workInfo ->
+            if (workInfo.state == WorkInfo.State.SUCCEEDED){
+                val notificationId = 4   // each notification id should be different for each notification
+                val builder = NotificationCompat.Builder(Graph.appContext, "CHANNEL_ID")
+                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setContentTitle(title)
+                    .setContentText(content)
+                    .setStyle(NotificationCompat.BigTextStyle().bigText(bigContent))
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+                with(NotificationManagerCompat.from(Graph.appContext)) {
+                    notify(notificationId, builder.build())
+                }
+            }
+        }
+}
+
+
+fun createNotificationChannel(context: Context){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
         val name = "NotificationChannelName"
         val descriptionText = "NotificationChannelDescriptionText"

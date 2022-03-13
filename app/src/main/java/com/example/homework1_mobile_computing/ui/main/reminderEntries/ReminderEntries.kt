@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,19 +16,26 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.homework1_mobile_computing.R
 import com.example.homework1_mobile_computing.data.entity.Reminder
 import com.example.homework1_mobile_computing.ui.reminder.ReminderViewModel
 import com.example.homework1_mobile_computing.ui.theme.Purple200
 import com.example.homework1_mobile_computing.ui.theme.Purple700
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
+import java.lang.Math.abs
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,6 +46,13 @@ fun ReminderEntries (
 ){
     val viewModel: ReminderEntriesViewModel = viewModel()
     val viewState by viewModel.state.collectAsState()
+
+    val latlang = reminderNavController
+        .currentBackStackEntry
+        ?.savedStateHandle
+        ?.getLiveData<LatLng>("location_data")
+        ?.value
+
 
 
     Column(modifier = modifier)
@@ -50,43 +65,73 @@ fun ReminderEntries (
             }
         }
 
-
-        ReminderList(
-            //list = viewState.reminders,
-            list = newList,
-            reminderNavController
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box(
-            Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            Button(
-                onClick = {
-                    reminderNavController.navigate("AllRemindersScreen")
-
-                },
-
-                enabled = true,
-                modifier = Modifier
-                    .width(300.dp)
-                    .size(50.dp),
-                shape = MaterialTheme.shapes.large,
-                colors = ButtonDefaults.buttonColors(backgroundColor = Purple700)
-            ) {
-                Text(
-                    text = "Show all reminders",
-                    color = Color.White
-                )
+        val locationReminders = mutableListOf<Reminder>()
+        for (reminder in givenList){
+            if (latlang != null) {
+                if(abs(reminder.longitude - latlang.longitude) <= 2 &&
+                    abs(reminder.latitude - latlang.latitude) <= 2){
+                    locationReminders.add(reminder)
+                }
             }
         }
 
+        if (latlang==null){
+
+            ReminderList(
+                //list = viewState.reminders,
+                list = newList,
+                reminderNavController
+            )
+        }
+        else{
+            ReminderList(
+                //list = viewState.reminders,
+                list = locationReminders,
+                reminderNavController
+            )
+
+        }
 
 
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = {
+                reminderNavController.navigate("AllRemindersScreen")
+            },
+            enabled = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            colors = ButtonDefaults.buttonColors(backgroundColor = Purple700)
+        ) {
+            Text(
+                text = "Show all reminders",
+                color = Color.White
+            )
+        }
+
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+
+        Button(
+            onClick = {
+                reminderNavController.navigate("map/${"location"}")
+            },
+            enabled = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            colors = ButtonDefaults.buttonColors(backgroundColor = Purple700)
+        ) {
+            Text(
+                text = "Virtual Location",
+                color = Color.White
+            )
+        }
     }
 }
+
+
 
 @Composable
 private fun ReminderList(
@@ -108,6 +153,7 @@ private fun ReminderList(
     }
 }
 
+
 @Composable
 fun ReminderLisItem(
     reminder: Reminder,
@@ -124,6 +170,7 @@ fun ReminderLisItem(
     val title = rememberSaveable { mutableStateOf("") }
     val date = rememberSaveable { mutableStateOf("") }
 
+
     ConstraintLayout(
         modifier = modifier.clickable { onClick() }
     ) {
@@ -137,7 +184,7 @@ fun ReminderLisItem(
         )
         // title
         Text(
-            text = reminder.title,
+            text = reminder.title, /*longitude.toString()*/
             maxLines = 1,
             style = MaterialTheme.typography.subtitle1,
             fontSize = 17.sp,
@@ -155,7 +202,7 @@ fun ReminderLisItem(
         )
 // date
         Text(
-            text = reminder.dateAndTime.toDateString(),
+            text = reminder.dateAndTime.toDateString(), /*latitude.toString()*/
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.subtitle2,
@@ -214,7 +261,7 @@ fun ReminderLisItem(
         ) {
             Icon(
                 imageVector = Icons.Filled.Edit,
-                contentDescription = "Edit",        // extract resource from λαμπα
+                contentDescription = stringResource(R.string.edit),
                 tint = Color.White
             )
         }
@@ -244,7 +291,7 @@ fun ReminderLisItem(
         ){
             Icon(
                 imageVector = Icons.Filled.Delete,
-                contentDescription = "Delete",        // extract resource from λαμπα
+                contentDescription = stringResource(R.string.delete),
                 tint = Color.White
 
             )
@@ -265,7 +312,7 @@ fun ReminderLisItem(
         ){
             Icon(
                 imageVector = Icons.Filled.ViewHeadline,
-                contentDescription = "More",        // extract resource from λαμπα
+                contentDescription = stringResource(R.string.more),
                 tint = Color.White
             )
         }

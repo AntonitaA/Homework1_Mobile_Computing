@@ -6,4 +6,7 @@
     <string name="showPassword">showPassword</string>
     <string name="back">back</string>
     <string name="refresh">refresh</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="more">More</string>
 </resources>

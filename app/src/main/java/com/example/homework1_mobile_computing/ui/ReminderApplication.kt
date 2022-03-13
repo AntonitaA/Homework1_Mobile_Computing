@@ -10,6 +10,7 @@ import com.example.homework1_mobile_computing.ui.rememberState
 import com.example.homework1_mobile_computing.ui.login.LoginScreen
 import com.example.homework1_mobile_computing.ui.main.AllRemindersScreen
 import com.example.homework1_mobile_computing.ui.main.MainScreen
+import com.example.homework1_mobile_computing.ui.maps.ReminderLocationMap
 import com.example.homework1_mobile_computing.ui.profile.ProfileScreen
 import com.example.homework1_mobile_computing.ui.reminder.EditReminderScreen
 import com.example.homework1_mobile_computing.ui.reminder.NewReminderScreen
@@ -40,12 +41,21 @@ fun ReminderApplication(
             entry.arguments?.getString("username")?:""
         )
         }
+
+        composable(route = "map/{buttonPressed}") {
+                entry -> ReminderLocationMap(
+            mapNavController = state.navigationController,
+            entry.arguments?.getString("buttonPressed")?:""
+        )
+        }
+
         composable(route = "ProfileScreen/{username}"){ /**/
                 entry -> ProfileScreen(
             profileNavController = state.navigationController,
             sharedPreferences,
             onBackPress = { state.navigateBack() },
-            entry.arguments?.getString("username")?:"")
+            entry.arguments?.getString("username")?:""
+        )
         }
         composable(route = "SignUpScreen"){
             SignupScreen(
@@ -68,5 +78,6 @@ fun ReminderApplication(
                 allNavigationController = state.navigationController
             )
         }
+
     }
 }

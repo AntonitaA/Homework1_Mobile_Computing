@@ -23,6 +23,7 @@ import com.example.homework1_mobile_computing.ui.main.reminderEntries.toDateStri
 import com.example.homework1_mobile_computing.ui.theme.Purple200
 import com.example.homework1_mobile_computing.ui.theme.Purple700
 import com.google.accompanist.insets.systemBarsPadding
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
 import java.text.ParseException
@@ -61,17 +62,26 @@ fun EditReminderContent(
     //username: String,
     viewModel: ReminderViewModel = viewModel()
 ) {
+
+    val appBarColor = MaterialTheme.colors.surface.copy(alpha = 0.87f)
+    val newTitle = rememberSaveable { mutableStateOf("") }
+    val newDate = rememberSaveable { mutableStateOf( "" )}
+    val newTime = rememberSaveable { mutableStateOf( "" )}
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val latlang = contentNavigationController
+        .currentBackStackEntry
+        ?.savedStateHandle
+        ?.getLiveData<LatLng>("location_data")
+        ?.value
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
     ) {
-        val appBarColor = MaterialTheme.colors.surface.copy(alpha = 0.87f)
-        val newTitle = rememberSaveable { mutableStateOf("") }
-        val newDate = rememberSaveable { mutableStateOf( "" )}
-        val newTime = rememberSaveable { mutableStateOf( "" )}
-
-        val coroutineScope = rememberCoroutineScope()
 
         EditReminderScreenBar(
             editNavController = contentNavigationController,
@@ -117,27 +127,54 @@ fun EditReminderContent(
                 unfocusedBorderColor = Purple200
             )
         )
+
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Reminder Date
-        OutlinedTextField(
+        Row(modifier = Modifier.fillMaxWidth()) {
 
-            value = newDate.value,
-            onValueChange = {
-                    data:String -> newDate.value = data
-            },
-            label = { Text("New Date") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number
-            ),
-            shape = MaterialTheme.shapes.medium,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Purple700,
-                unfocusedBorderColor = Purple200
+            // Reminder Date
+            OutlinedTextField(
+
+                value = newDate.value,
+                onValueChange = {
+                        data:String -> newDate.value = data
+                },
+                label = { Text("New Date") },
+                modifier = Modifier.fillMaxWidth(fraction = 0.5f),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number
+                ),
+                shape = MaterialTheme.shapes.medium,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Purple700,
+                    unfocusedBorderColor = Purple200
+                )
             )
-        )
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            if (latlang == null) {
+                OutlinedButton(
+                    onClick = { contentNavigationController.navigate("map/${"edit"}") },
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(300.dp)
+                        .size(50.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Purple700)
+
+                ) {
+                    Text(text = "Reminder location")
+                }
+            } else {
+                Text(
+                    text = "( ${latlang.latitude},  ${latlang.longitude} )"
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.height(40.dp))
+
 
         Box(
             Modifier.fillMaxSize(),
@@ -155,21 +192,23 @@ fun EditReminderContent(
                         coroutineScope.launch {
                             val selectedReminder: Reminder = viewModel.getReminder(selectedReminderId.toLong())
 
-                            viewModel.updateReminderElements(
-                                Reminder(
-                                    id = selectedReminder.id,
-                                    title = newTitle.value,
-                                    cordX = selectedReminder.cordX,
-                                    cordY = selectedReminder.cordY,
-                                    dateAndTime = newDateAndTimeDateFormat.time,
-                                    seen = selectedReminder.seen,
-                                    creationTime = selectedReminder.creationTime,   /*TODO*/
-                                    creationDate = selectedReminder.creationDate, /*TODO*/
-                                    creatorId = selectedReminder.creatorId
+                            if (latlang != null) {
+                                viewModel.updateReminderElements(
+                                    Reminder(
+                                        id = selectedReminder.id,
+                                        title = newTitle.value,
+                                        longitude = latlang.longitude,
+                                        latitude = latlang.latitude,
+                                        dateAndTime = newDateAndTimeDateFormat.time,
+                                        seen = selectedReminder.seen,
+                                        creationTime = selectedReminder.creationTime,   /*TODO*/
+                                        creationDate = selectedReminder.creationDate, /*TODO*/
+                                        creatorId = selectedReminder.creatorId
+
+                                    )
 
                                 )
-
-                            )
+                            }
                         }
                     }
                 },
@@ -255,6 +294,7 @@ year = df.format(date);*/
                 //}
             } else {
                 return null
+
             }
 
         } else {

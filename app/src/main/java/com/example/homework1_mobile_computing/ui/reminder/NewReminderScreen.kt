@@ -23,6 +23,7 @@ import com.example.homework1_mobile_computing.ui.theme.Purple700
 import com.google.accompanist.insets.systemBarsPadding
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.homework1_mobile_computing.data.entity.Reminder
+import com.google.android.gms.maps.model.LatLng
 
 import kotlinx.coroutines.launch
 import java.lang.NumberFormatException
@@ -63,8 +64,14 @@ fun NewReminderContent(
     val coroutineScope = rememberCoroutineScope()
 
     val title = rememberSaveable { mutableStateOf("") }
-    val date = rememberSaveable { mutableStateOf( "" )}
+    val date = rememberSaveable { mutableStateOf("") }
     val time = rememberSaveable { mutableStateOf("") }
+
+    val latlang = contentNavigationController
+        .currentBackStackEntry
+        ?.savedStateHandle
+        ?.getLiveData<LatLng>("location_data")
+        ?.value
 
     //allows us to have access to the interface
     Surface(
@@ -89,8 +96,8 @@ fun NewReminderContent(
             // Reminder Title
             OutlinedTextField(
                 value = title.value,
-                onValueChange = {
-                        data -> title.value = data
+                onValueChange = { data ->
+                    title.value = data
                 },
                 label = { Text("Reminder Title") },
                 modifier = Modifier.fillMaxWidth(),
@@ -108,8 +115,8 @@ fun NewReminderContent(
             // Reminder Time
             OutlinedTextField(
                 value = time.value,
-                onValueChange = {
-                        data -> time.value = data
+                onValueChange = { data ->
+                    time.value = data
                 },
                 label = { Text("Time") },
                 modifier = Modifier.fillMaxWidth(),
@@ -124,24 +131,47 @@ fun NewReminderContent(
             )
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Reminder Date
-            OutlinedTextField(
+            Row(modifier = Modifier.fillMaxWidth()) {
+// Reminder Date
+                OutlinedTextField(
 
-                value = date.value,
-                onValueChange = {
-                        data:String -> date.value = data
-                },
-                label = { Text("Date") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number
-                ),
-                shape = MaterialTheme.shapes.medium,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Purple700,
-                    unfocusedBorderColor = Purple200
+                    value = date.value,
+                    onValueChange = { data: String ->
+                        date.value = data
+                    },
+                    label = { Text("Date") },
+                    modifier = Modifier.fillMaxWidth(fraction = 0.5f),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Purple700,
+                        unfocusedBorderColor = Purple200
+                    )
                 )
-            )
+                Spacer(modifier = Modifier.width(10.dp))
+                if (latlang == null) {
+                    OutlinedButton(
+                        onClick = { contentNavigationController.navigate("map/${"new"}") },
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(300.dp)
+                            .size(50.dp),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Purple700)
+
+                    ) {
+                        Text(text = "Reminder location")
+                    }
+                } else {
+                    Text(
+                        text = "( ${latlang.latitude},  ${latlang.longitude} )"
+                    )
+                }
+            }
+
+
             Spacer(modifier = Modifier.height(40.dp))
 
             Box(
@@ -152,17 +182,22 @@ fun NewReminderContent(
                     onClick = {
                         if (checkDate(givenDate = date.value) != null &&
                             title.value != "" &&
-                            date.value != ""
+                            date.value != "" &&
+                            latlang != null
                         ) {
-                            val newDateAndTime : String = date.value + " " + time.value
-                            val newDateAndTimeDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).parse(newDateAndTime)
+                            val newDateAndTime: String = date.value + " " + time.value
+                            val newDateAndTimeDateFormat =
+                                SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).parse(
+                                    newDateAndTime
+                                )
 
                             coroutineScope.launch {
                                 viewModel.saveReminder(
+
                                     Reminder(
                                         title = title.value,
-                                        cordX = "coordinate X",
-                                        cordY = "coordinate Y",
+                                        latitude = latlang.latitude,
+                                        longitude = latlang.longitude,
                                         dateAndTime = newDateAndTimeDateFormat.time,
                                         seen = false,
                                         creationTime = SimpleDateFormat(
@@ -175,6 +210,9 @@ fun NewReminderContent(
                                         ).format(Date().time),  /*TODO*/
                                         creatorId = "creator id"
                                     )
+
+
+
                                 )
                             }
                             contentNavigationController.navigate("MainScreen/${username}")

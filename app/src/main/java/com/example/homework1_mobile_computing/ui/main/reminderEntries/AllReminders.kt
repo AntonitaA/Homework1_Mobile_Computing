@@ -1,7 +1,3 @@
-
-
-
-
 package com.example.homework1_mobile_computing.ui.main.reminderEntries
 
 import androidx.compose.foundation.clickable
@@ -29,6 +25,7 @@ import com.example.homework1_mobile_computing.data.entity.Reminder
 import com.example.homework1_mobile_computing.ui.reminder.ReminderViewModel
 import com.example.homework1_mobile_computing.ui.theme.Purple200
 import com.example.homework1_mobile_computing.ui.theme.Purple700
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -101,6 +98,8 @@ fun AllRemindersListItem(
 
     val title = rememberSaveable { mutableStateOf("") }
     val date = rememberSaveable { mutableStateOf("") }
+
+
 
     ConstraintLayout(
         modifier = modifier.clickable { onClick() }
